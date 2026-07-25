@@ -1,0 +1,155 @@
+/* ============================================
+   BULUGH AL-MARAM — ANIMATIONS
+   Micro-interactions & transitions
+   ============================================ */
+
+/* ── Card Entrance Stagger ── */
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hadith-card[data-animate] {
+  animation: cardSlideUp 0.4s ease-out both;
+}
+
+/* ── Glass Shimmer ── */
+@keyframes glassShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.glass-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: glassShimmer 3s ease-in-out infinite;
+}
+
+
+
+/* ── Ripple Effect ── */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn .ripple-effect {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  animation: ripple 0.6s ease-out;
+  pointer-events: none;
+}
+
+/* ── Skeleton Loading ── */
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.06; }
+  50% { opacity: 0.12; }
+}
+
+.skeleton {
+  background: var(--text-tertiary);
+  border-radius: var(--radius-sm);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.skeleton--text {
+  height: 1em;
+  width: 100%;
+  margin-bottom: var(--space-2);
+}
+
+.skeleton--text:last-child {
+  width: 60%;
+}
+
+.skeleton--circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+}
+
+/* ── Fade In/Out Utilities ── */
+.fade-enter {
+  animation: fadeIn 0.25s ease-out;
+}
+
+.fade-exit {
+  animation: fadeOut 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ── Scale Bounce ── */
+@keyframes scaleBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.bounce-on-click:active {
+  animation: scaleBounce 0.2s ease;
+}
+
+/* ── Progress Ring Animation ── */
+@keyframes progressFill {
+  from { stroke-dashoffset: 283; }
+}
+
+.progress-ring__fill {
+  animation: progressFill 1s ease-out;
+}
+
+/* ── Theme Transition ── */
+.theme-transitioning,
+.theme-transitioning * {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease !important;
+}
+
+/* ── Slide In from Left (RTL: drawer comes from left) ── */
+@keyframes slideInFromLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+/* ── Number Count Up ── */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stat-card__value {
+  animation: countUp 0.5s ease-out;
+}
