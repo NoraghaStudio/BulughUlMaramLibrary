@@ -110,7 +110,7 @@ const Renderer = (() => {
       </div>
       <div class="hadith-card__text" dir="rtl">${displayText}</div>
       <div class="hadith-card__actions">
-        ${hasSharh ? `<button class="btn btn--ghost btn--pill" data-action="sharh" data-id="${hadith.id}" data-tooltip="الشرح"><svg class="ui-icon"><use href="#icon-book-open"></use></svg> الشرح</button>` : ''}
+        ${hasSharh ? `<button class="btn btn--ghost btn--pill" data-action="sharh" data-id="${hadith.id}" data-tooltip="الشرح"><svg class="ui-icon"><use href="#icon-video"></use></svg> الشرح</button>` : ''}
 
         <span style="flex:1"></span>
         <button class="btn btn--ghost btn--icon-sm" data-action="copy" data-id="${hadith.id}" data-tooltip="نسخ"><svg class="ui-icon"><use href="#icon-clipboard"></use></svg></button>

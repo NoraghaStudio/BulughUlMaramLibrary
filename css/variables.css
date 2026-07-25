@@ -127,6 +127,11 @@
 [data-theme="light"] {
   --color-logo: #3d2b1f; /* Dark brown */
   
+  /* Override primary colors for light mode to brown */
+  --color-primary: #9c744c;
+  --color-primary-soft: rgba(156, 116, 76, 0.15);
+  --color-primary-glow: rgba(156, 116, 76, 0.3);
+
   --bg-deep: #f3ece4;
   --bg-base: #faf8f5;
   --bg-surface: #ffffff;
