@@ -64,7 +64,7 @@ const Search = (() => {
     const resultsContainer = document.getElementById('search-results');
     if (!resultsContainer) return;
 
-    if (!query || query.trim().length < 2) {
+    if (!query || query.trim().length < 1) {
       _showHint();
       return;
     }

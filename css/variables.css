@@ -7,9 +7,9 @@
 
 :root {
   /* ── Brand Colors ── */
-  --color-primary: #6c8cff;
-  --color-primary-soft: rgba(108, 140, 255, 0.15);
-  --color-primary-glow: rgba(108, 140, 255, 0.3);
+  --color-primary: #9c744c;
+  --color-primary-soft: rgba(156, 116, 76, 0.15);
+  --color-primary-glow: rgba(156, 116, 76, 0.3);
   --color-accent: #f0c674;
   --color-accent-soft: rgba(240, 198, 116, 0.15);
   --color-success: #6ccf8e;
@@ -89,11 +89,11 @@
 [data-theme="dark"], :root {
   --color-logo: #e6d3c0; /* Very light brown */
   
-  --bg-deep: #000000;
-  --bg-base: #0a0a0a;
-  --bg-surface: #121212;
-  --bg-elevated: #1a1a1a;
-  --bg-hover: #262626;
+  --bg-deep: #140d0a;
+  --bg-base: #1c130f;
+  --bg-surface: #241a15;
+  --bg-elevated: #2c201a;
+  --bg-hover: #362821;
 
   --text-primary: #ededed;
   --text-secondary: #a1a1a1;
@@ -110,7 +110,13 @@
   --glass-bg-solid: rgba(10, 10, 10, 0.92);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-blur: blur(20px) saturate(180%);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --glass-shadow: none;
+
+  /* Shadows removed for dark mode */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
 
   /* Ambient backgrounds */
   --ambient-1: radial-gradient(600px circle at 20% 30%, rgba(255, 255, 255, 0.03), transparent 70%);
@@ -126,11 +132,7 @@
    ══════════════════════════════════════════════ */
 [data-theme="light"] {
   --color-logo: #3d2b1f; /* Dark brown */
-  
-  /* Override primary colors for light mode to brown */
-  --color-primary: #9c744c;
-  --color-primary-soft: rgba(156, 116, 76, 0.15);
-  --color-primary-glow: rgba(156, 116, 76, 0.3);
+
 
   --bg-deep: #f3ece4;
   --bg-base: #faf8f5;

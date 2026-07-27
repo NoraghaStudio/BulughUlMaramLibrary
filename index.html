@@ -66,15 +66,7 @@
 
     <symbol id="icon-menu" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></symbol>
   </svg>
-  <!-- ═══════════════════════════════════════
-       LOADING SCREEN
-       ═══════════════════════════════════════ -->
-  <div id="loading-screen" class="loading-screen">
-    <div class="loading-screen__title">بلوغ المرام</div>
-    <div class="loading-screen__spinner"></div>
-    <p style="font-size: var(--font-size-sm); color: var(--text-tertiary);">جارٍ تحميل البيانات...</p>
-  </div>
-
+  <!-- Loading screen removed -->
   <!-- ═══════════════════════════════════════
        APP SHELL
        ═══════════════════════════════════════ -->
@@ -94,16 +86,15 @@
         <button class="navbar__link navbar__link--active" data-route="browse" role="menuitem"><svg class="ui-icon"><use href="#icon-book"></use></svg> التصفح</button>
         <button class="navbar__link" data-route="memorize" role="menuitem"><svg class="ui-icon"><use href="#icon-academic-cap"></use></svg> الحفظ</button>
         <button class="navbar__link" data-route="progress" role="menuitem"><svg class="ui-icon"><use href="#icon-chart-bar"></use></svg> التقدم</button>
-      </div>
-
-      <!-- Chapter Filter (Custom Dropdown) -->
-      <div id="chapter-dropdown" class="custom-dropdown">
-        <button class="custom-dropdown__trigger" id="chapter-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
-          <span class="custom-dropdown__text" id="chapter-dropdown-text">جميع الأحاديث</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ui-icon" style="width:14px;height:14px;margin-right:var(--space-2);"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="custom-dropdown__menu" id="chapter-dropdown-menu" role="listbox">
-          <!-- Populated by JS -->
+        <!-- Chapter Filter (Custom Dropdown) -->
+        <div id="chapter-dropdown" class="custom-dropdown">
+          <button class="custom-dropdown__trigger" id="chapter-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
+            <span class="custom-dropdown__text" id="chapter-dropdown-text">جميع الأحاديث</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ui-icon" style="width:14px;height:14px;margin-right:var(--space-2);"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="custom-dropdown__menu" id="chapter-dropdown-menu" role="listbox">
+            <!-- Populated by JS -->
+          </div>
         </div>
       </div>
 
@@ -128,7 +119,7 @@
         </div>
 
         <div id="hadith-list"></div>
-        <div id="scroll-sentinel" style="height: 1px;"></div>
+        <div id="pagination-controls" class="pagination-controls"></div>
       </div>
 
       <!-- ╔══════════════════════════════════╗
@@ -139,6 +130,9 @@
           <h1 class="page-header__title"><svg class="ui-icon"><use href="#icon-calendar"></use></svg> خطة الحفظ والمراجعة</h1>
           <p class="page-header__subtitle">قم بإنشاء جدول زمني مخصص لختم حفظ بلوغ المرام (١٣٥١ حديثاً)</p>
         </div>
+
+        <!-- Motivational Quote -->
+        <div id="hifz-quote-container"></div>
 
         <!-- Planner Form -->
         <div class="hifz-planner-card glass-panel" id="hifz-planner-form-container">
@@ -163,9 +157,27 @@
             <input type="date" id="hifz-deadline-value" class="hifz-input">
           </div>
 
+          <div class="hifz-planner__inputs">
+            <label>تاريخ بداية الحفظ (اختياري):</label>
+            <input type="date" id="hifz-start-date" class="hifz-input">
+          </div>
+
+          <div class="hifz-planner__inputs">
+            <label>أيام المراجعة الأسبوعية (لا يوجد فيها حفظ جديد):</label>
+            <div class="hifz-review-days-container" style="display: flex; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-2);">
+              <label class="hifz-checkbox-btn"><input type="checkbox" name="review_day" value="5"><span>الجمعة</span></label>
+              <label class="hifz-checkbox-btn"><input type="checkbox" name="review_day" value="6"><span>السبت</span></label>
+              <label class="hifz-checkbox-btn"><input type="checkbox" name="review_day" value="0"><span>الأحد</span></label>
+              <label class="hifz-checkbox-btn"><input type="checkbox" name="review_day" value="1"><span>الإثنين</span></label>
+              <label class="hifz-checkbox-btn"><input type="checkbox" name="review_day" value="2"><span>الثلاثاء</span></label>
+              <label class="hifz-checkbox-btn"><input type="checkbox" name="review_day" value="3"><span>الأربعاء</span></label>
+              <label class="hifz-checkbox-btn"><input type="checkbox" name="review_day" value="4"><span>الخميس</span></label>
+            </div>
+          </div>
+
           <div class="hifz-planner__actions">
             <button class="btn btn--primary btn--pill" id="hifz-generate-btn">إنشاء الخطة</button>
-            <button class="btn btn--ghost btn--pill" id="hifz-reset-btn" style="display: none;">حذف الخطة الحالية</button>
+            <button class="btn btn--danger btn--pill" id="hifz-delete-btn" style="display: none;">حذف الخطة</button>
           </div>
         </div>
 
@@ -183,6 +195,14 @@
             <span class="hifz-stat-value hifz-stat-value--success" id="hifz-percent">0%</span>
             <span class="hifz-stat-label">نسبة الإنجاز</span>
           </div>
+        </div>
+
+        <!-- Active Plan Actions -->
+        <div style="display: flex; justify-content: flex-end; margin-bottom: var(--space-4);">
+          <button class="btn btn--ghost btn--pill" id="hifz-edit-btn" style="display: none; align-items: center; gap: var(--space-2);">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            تعديل الخطة
+          </button>
         </div>
 
         <!-- Schedule Container -->
@@ -253,7 +273,6 @@
   <style>
     @media (max-width: 768px) {
       #mobile-menu-btn { display: flex !important; }
-      #chapter-dropdown { display: none; }
     }
   </style>
 </body>

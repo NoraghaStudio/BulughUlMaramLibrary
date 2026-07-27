@@ -8,6 +8,16 @@ const Memorization = (() => {
   const TOTAL_HADITHS = 1351;
   let currentPlan = null;
 
+  const INSPIRATIONAL_QUOTES = [
+    { text: 'عن زيد بن ثابت رضي الله عنه قال: سمعت رسول الله ﷺ يقول: «نَضَّرَ اللَّهُ امْرَأً سَمِعَ مَقَالَتِي فَوَعَاهَا وَحَفِظَهَا وَبَلَّغَهَا، فَرُبَّ حَامِلِ فِقْهٍ إِلَى مَنْ هُوَ أَفْقَهُ مِنْهُ».', source: 'سنن الترمذي وصحيح ابن حبان' },
+    { text: 'عن أبي بكرة رضي الله عنه، عن النبي ﷺ أنه قال في خطبة حجة الوداع: «لِيَبْلُغِ الشَّاهِدُ الغَائِبَ، فَإِنَّ الشَّاهِدَ عَسَى أَنْ يُبْلِغَ مَنْ هُوَ أَوْعَى لَهُ مِنْهُ».', source: 'صحيح البخاري ومسلم' },
+    { text: 'عن عبد الله بن عباس رضي الله عنهما، عن النبي ﷺ قال: «تَسْمَعُونَ وَيُسْمَعُ مِنْكُمْ، وَيُسْمَعُ مِمَّنْ يَسْمَعُ مِنْكُمْ».', source: 'سنن أبي داود ومستدرك الحاكم' },
+    { text: 'قال سفيان بن عيينة رحمه الله: «لا تجد أحداً يطلب الحديث إلا وفي وجهه نضرة، لحديث النبي ﷺ: نضّر الله امرأً سمع مقالتي...».', source: 'شرف أصحاب الحديث للخطيب البغدادي' },
+    { text: 'قال سفيان الثوري رحمه الله: «ما أعلم عملاً أفضل من طلب الحديث لمن صحت فيه نيته».', source: 'شرف أصحاب الحديث للخطيب البغدادي' },
+    { text: 'قال الإمام الشافعي رحمه الله: «إذا رأيتُ رجلاً من أصحاب الحديث، فكأني رأيتُ رجلاً من أصحاب النبي ﷺ».', source: 'حلية الأولياء لأبي نعيم' },
+    { text: 'قال الإمام أحمد بن حنبل رحمه الله: «ليس قومٌ عندي أفضلَ من أصحاب الحديث، ليس لهم معيشة إلا أخذ الحديث والاجتهاد في حفظه».', source: 'شرف أصحاب الحديث للخطيب البغدادي' }
+  ];
+
   function init() {
     _load();
   }
@@ -51,20 +61,32 @@ const Memorization = (() => {
   }
 
   // --- Plan Generation ---
-  function generatePlanByRate(rate) {
+  function generatePlanByRate(rate, startDateObj, reviewDays) {
     if (!rate || rate < 1) return;
     
     const schedule = [];
     let currentHadith = 1;
     let dayNum = 1;
-    const startDate = new Date();
+    let daysPassed = 0;
+    
+    const startDate = startDateObj || new Date();
     startDate.setHours(0,0,0,0);
+    const reviewDaysSet = new Set(reviewDays || []);
 
     while (currentHadith <= TOTAL_HADITHS) {
-      let start = currentHadith;
-      let end = Math.min(start + rate - 1, TOTAL_HADITHS);
+      const currentDate = addDays(startDate, daysPassed);
+      const isReviewDay = reviewDaysSet.has(currentDate.getDay().toString());
       
-      const currentDate = addDays(startDate, dayNum - 1);
+      let start = null;
+      let end = null;
+      let count = 0;
+
+      if (!isReviewDay) {
+        start = currentHadith;
+        end = Math.min(start + rate - 1, TOTAL_HADITHS);
+        count = end - start + 1;
+        currentHadith = end + 1;
+      }
 
       schedule.push({
         dayNum,
@@ -73,23 +95,24 @@ const Memorization = (() => {
         hijriDateStr: formatHijri(currentDate),
         startHadith: start,
         endHadith: end,
-        count: end - start + 1,
-        completed: false
+        count: count,
+        completed: false,
+        isReviewDay: isReviewDay
       });
 
-      currentHadith = end + 1;
       dayNum++;
+      daysPassed++;
     }
 
-    currentPlan = { schedule, createdAt: startDate.toISOString() };
+    currentPlan = { schedule, createdAt: startDate.toISOString(), reviewDays: Array.from(reviewDaysSet) };
     _save();
     renderPlanView();
   }
 
-  function generatePlanByDeadline(deadlineStr) {
+  function generatePlanByDeadline(deadlineStr, startDateObj, reviewDays) {
     if (!deadlineStr) return;
     
-    const startDate = new Date();
+    const startDate = startDateObj || new Date();
     startDate.setHours(0,0,0,0);
     const deadlineDate = new Date(deadlineStr);
     deadlineDate.setHours(0,0,0,0);
@@ -101,9 +124,24 @@ const Memorization = (() => {
       alert('الرجاء اختيار تاريخ مستقبلي.');
       return;
     }
+    
+    const reviewDaysSet = new Set(reviewDays || []);
+    let activeDays = 0;
+    
+    for (let i = 0; i < diffDays; i++) {
+        const d = addDays(startDate, i);
+        if (!reviewDaysSet.has(d.getDay().toString())) {
+            activeDays++;
+        }
+    }
+    
+    if (activeDays === 0) {
+        alert('تاريخ الختم قريب جداً بحيث تكون كل الأيام المتبقية أيام مراجعة!');
+        return;
+    }
 
-    const rate = Math.ceil(TOTAL_HADITHS / diffDays);
-    generatePlanByRate(rate);
+    const rate = Math.ceil(TOTAL_HADITHS / activeDays);
+    generatePlanByRate(rate, startDate, reviewDays);
   }
 
   function resetPlan() {
@@ -142,11 +180,12 @@ const Memorization = (() => {
     const startDate = new Date(currentPlan.createdAt);
     let currentHadith = 1;
     let dayNum = 1;
+    let daysPassed = 0;
     
     // Process existing array items
     for (let i = 0; i < currentPlan.schedule.length; i++) {
       let day = currentPlan.schedule[i];
-      const currentDate = addDays(startDate, dayNum - 1);
+      const currentDate = addDays(startDate, daysPassed);
       
       day.dayNum = dayNum;
       day.dateIso = currentDate.toISOString();
@@ -164,8 +203,11 @@ const Memorization = (() => {
         day.endHadith = null;
       }
       dayNum++;
+      daysPassed++;
     }
     
+    const reviewDaysSet = new Set(currentPlan.reviewDays || []);
+
     // If we haven't reached TOTAL_HADITHS, append more days
     while (currentHadith <= TOTAL_HADITHS) {
       let lastValidCount = 5; 
@@ -177,21 +219,37 @@ const Memorization = (() => {
       }
       
       let count = Math.min(lastValidCount, TOTAL_HADITHS - currentHadith + 1);
-      const currentDate = addDays(startDate, dayNum - 1);
+      const currentDate = addDays(startDate, daysPassed);
+      const isReviewDay = reviewDaysSet.has(currentDate.getDay().toString());
       
-      currentPlan.schedule.push({
-        dayNum: dayNum,
-        dateIso: currentDate.toISOString(),
-        gregDateStr: formatGregorian(currentDate),
-        hijriDateStr: formatHijri(currentDate),
-        startHadith: currentHadith,
-        endHadith: currentHadith + count - 1,
-        count: count,
-        completed: false
-      });
+      if (isReviewDay) {
+        currentPlan.schedule.push({
+          dayNum: dayNum,
+          dateIso: currentDate.toISOString(),
+          gregDateStr: formatGregorian(currentDate),
+          hijriDateStr: formatHijri(currentDate),
+          startHadith: null,
+          endHadith: null,
+          count: 0,
+          completed: false,
+          isReviewDay: true
+        });
+      } else {
+        currentPlan.schedule.push({
+          dayNum: dayNum,
+          dateIso: currentDate.toISOString(),
+          gregDateStr: formatGregorian(currentDate),
+          hijriDateStr: formatHijri(currentDate),
+          startHadith: currentHadith,
+          endHadith: currentHadith + count - 1,
+          count: count,
+          completed: false
+        });
+        currentHadith += count;
+      }
       
-      currentHadith += count;
       dayNum++;
+      daysPassed++;
     }
     
     // Slice off trailing days if we reached TOTAL_HADITHS early
@@ -232,7 +290,9 @@ const Memorization = (() => {
     const formContainer = document.getElementById('hifz-planner-form-container');
     const statsContainer = document.getElementById('hifz-stats-container');
     const scheduleContainer = document.getElementById('hifz-schedule-container');
-    const resetBtn = document.getElementById('hifz-reset-btn');
+    const resetBtn = document.getElementById('hifz-reset-btn'); // Fallback if exists
+    const editBtn = document.getElementById('hifz-edit-btn');
+    const deleteBtn = document.getElementById('hifz-delete-btn');
 
     if (!formContainer || !scheduleContainer) return;
 
@@ -240,7 +300,8 @@ const Memorization = (() => {
       // Show form, hide schedule
       formContainer.style.display = 'block';
       statsContainer.style.display = 'none';
-      resetBtn.style.display = 'none';
+      if (editBtn) editBtn.style.display = 'none';
+      if (deleteBtn) deleteBtn.style.display = 'none';
       scheduleContainer.innerHTML = `
         <div class="empty-state">
           <div class="empty-state__icon"><svg class="ui-icon" style="width: 48px; height: 48px;"><use href="#icon-edit"></use></svg></div>
@@ -251,16 +312,28 @@ const Memorization = (() => {
       return;
     }
 
+    const todayStr = new Date().toDateString();
+
     // Hide form, show schedule
     formContainer.style.display = 'none';
     statsContainer.style.display = 'flex';
-    resetBtn.style.display = 'inline-flex';
+    if (editBtn) editBtn.style.display = 'inline-flex';
+    if (deleteBtn) deleteBtn.style.display = 'inline-flex';
 
     // Render schedule
-    scheduleContainer.innerHTML = currentPlan.schedule.map(day => `
-      <div class="hifz-day-card ${day.completed ? 'hifz-day-card--completed' : ''} ${day.count === 0 ? 'hifz-day-card--off' : ''}" data-day="${day.dayNum}">
+    scheduleContainer.innerHTML = currentPlan.schedule.map(day => {
+      const dayDate = new Date(day.dateIso);
+      dayDate.setHours(0,0,0,0);
+      const todayDate = new Date(todayStr);
+      
+      const isToday = dayDate.getTime() === todayDate.getTime();
+      const isPast = dayDate < todayDate;
+      const isMissed = isPast && !day.completed && day.count > 0;
+
+      return `
+      <div class="hifz-day-card ${day.completed ? 'hifz-day-card--completed' : ''} ${day.count === 0 ? 'hifz-day-card--off' : ''} ${isToday ? 'hifz-day-card--today' : ''} ${isMissed ? 'hifz-day-card--missed' : ''}" data-day="${day.dayNum}">
         ${day.count > 0 ? `<input type="checkbox" class="hifz-day__checkbox" data-action="toggle-day" data-day="${day.dayNum}" ${day.completed ? 'checked' : ''}>` : '<div style="width: 24px;"></div>'}
-        <div class="hifz-day__number">اليوم ${day.dayNum}</div>
+        <div class="hifz-day__number">اليوم ${day.dayNum} ${isToday ? '<span class="today-badge">وِرد اليوم</span>' : ''} ${isMissed ? '<span class="missed-badge">لم يُحفظ</span>' : ''}</div>
         <div class="hifz-day__dates">
           <span class="hifz-day__date-hijri">${day.hijriDateStr}</span>
           <span class="hifz-day__date-greg">${day.gregDateStr}</span>
@@ -277,7 +350,8 @@ const Memorization = (() => {
           `}
         </div>
       </div>
-    `).join('');
+      `;
+    }).join('');
 
     // Attach event listeners
     scheduleContainer.querySelectorAll('[data-action="toggle-day"]').forEach(cb => {
@@ -358,16 +432,40 @@ const Memorization = (() => {
 
     document.getElementById('hifz-generate-btn')?.addEventListener('click', () => {
       const mode = document.querySelector('input[name="plan_mode"]:checked')?.value;
+      const startDateStr = document.getElementById('hifz-start-date').value;
+      const startDateObj = startDateStr ? new Date(startDateStr) : new Date();
+      
+      const reviewDays = Array.from(document.querySelectorAll('input[name="review_day"]:checked')).map(cb => cb.value);
+
       if (mode === 'rate') {
         const rate = parseInt(document.getElementById('hifz-rate-value').value);
-        generatePlanByRate(rate);
+        generatePlanByRate(rate, startDateObj, reviewDays);
       } else {
         const deadline = document.getElementById('hifz-deadline-value').value;
-        generatePlanByDeadline(deadline);
+        generatePlanByDeadline(deadline, startDateObj, reviewDays);
       }
     });
 
-    document.getElementById('hifz-reset-btn')?.addEventListener('click', resetPlan);
+    document.getElementById('hifz-delete-btn')?.addEventListener('click', resetPlan);
+
+    document.getElementById('hifz-edit-btn')?.addEventListener('click', () => {
+      document.getElementById('hifz-planner-form-container').style.display = 'block';
+      document.getElementById('hifz-stats-container').style.display = 'none';
+      document.getElementById('hifz-schedule-container').style.display = 'none';
+      document.getElementById('hifz-edit-btn').style.display = 'none';
+    });
+
+    // Render random quote
+    const quoteContainer = document.getElementById('hifz-quote-container');
+    if (quoteContainer) {
+      const quote = INSPIRATIONAL_QUOTES[Math.floor(Math.random() * INSPIRATIONAL_QUOTES.length)];
+      quoteContainer.innerHTML = `
+        <blockquote class="hifz-quote glass-panel">
+          <p class="hifz-quote__text">${quote.text}</p>
+          <footer class="hifz-quote__source">— ${quote.source}</footer>
+        </blockquote>
+      `;
+    }
 
     // Initial render
     renderPlanView();
@@ -386,6 +484,22 @@ const Memorization = (() => {
     `;
   }
 
+  function getTodayPlanRange() {
+    if (!currentPlan) return null;
+    const todayStr = new Date().toDateString();
+    const todayTask = currentPlan.schedule.find(day => {
+      const dayDate = new Date(day.dateIso);
+      dayDate.setHours(0,0,0,0);
+      const todayDate = new Date(todayStr);
+      return dayDate.getTime() === todayDate.getTime() && day.count > 0;
+    });
+    
+    if (todayTask) {
+      return { start: todayTask.startHadith, end: todayTask.endHadith, completed: todayTask.completed };
+    }
+    return null;
+  }
+
   return {
     init,
     initPlannerUI,
@@ -395,6 +509,7 @@ const Memorization = (() => {
     insertOffDay,
     removeOffDay,
     renderPlanView,
-    renderProgressView
+    renderProgressView,
+    getTodayPlanRange
   };
 })();

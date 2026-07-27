@@ -48,7 +48,7 @@ const DataLayer = (() => {
    */
   function _buildChapterIndex() {
     chapters = [];
-    let currentChapter = { id: 'intro', name: 'المقدمة', type: 'كتاب', startHadith: 1, hadiths: [] };
+    let currentChapter = { id: 'ch-0', name: 'باب المياه', type: 'باب', startHadith: 1, afterHadith: 0, hadiths: [] };
     chapters.push(currentChapter);
 
     for (const h of hadiths) {
@@ -140,12 +140,25 @@ const DataLayer = (() => {
    * Search hadiths by Arabic text (tashkeel-insensitive)
    */
   function searchHadiths(query, limit = 30) {
-    if (!query || query.length < 2) return [];
-    const normalizedQuery = stripTashkeel(query);
+    if (!query) return [];
+    const normalizedQuery = stripTashkeel(query.toString());
+    if (normalizedQuery.length < 1) return [];
     const results = [];
+    
+    const queryNum = parseInt(normalizedQuery);
     
     for (const h of hadiths) {
       if (results.length >= limit) break;
+      
+      // Match by ID
+      if (!isNaN(queryNum) && h.id === queryNum) {
+        results.push({
+          ...hadithMap.get(h.id),
+          matchIndex: 0,
+        });
+        continue;
+      }
+      
       const normalizedText = stripTashkeel(h.text_ar);
       if (normalizedText.includes(normalizedQuery)) {
         results.push({

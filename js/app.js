@@ -148,10 +148,9 @@ const App = (() => {
     menu.appendChild(allItem);
 
     for (const ch of chapters) {
-      if (ch.id === 'intro') continue;
       const item = document.createElement('div');
       item.className = 'custom-dropdown__item';
-      item.dataset.value = ch.afterHadith || '';
+      item.dataset.value = ch.afterHadith !== undefined ? ch.afterHadith : '';
       item.textContent = ch.name;
       menu.appendChild(item);
     }

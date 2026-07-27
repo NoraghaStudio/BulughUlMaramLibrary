@@ -30,7 +30,6 @@
 }
 .btn--primary:hover {
   background: #5a7aee;
-  box-shadow: var(--shadow-glow);
 }
 
 .btn--ghost {
@@ -81,18 +80,7 @@
   overflow: hidden;
 }
 
-.hadith-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 80px;
-  height: 80px;
-  background: radial-gradient(circle, var(--color-primary-soft), transparent 70%);
-  border-radius: 0 var(--radius-xl) 0 0;
-  opacity: 0;
-  transition: opacity var(--transition-base);
-}
+
 
 .hadith-card:hover {
   border-color: var(--border-strong);
@@ -100,17 +88,9 @@
   box-shadow: var(--shadow-lg);
 }
 
-.hadith-card:hover::before {
-  opacity: 1;
-}
-
 .hadith-card--active {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 1px var(--color-primary), var(--shadow-lg);
-}
-
-.hadith-card--active::before {
-  opacity: 1;
 }
 
 /* Card Header */
@@ -489,6 +469,46 @@
   font-size: var(--font-size-lg);
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.hifz-radio-btn__text {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.hifz-checkbox-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  padding: var(--space-2) var(--space-3);
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast) ease;
+}
+
+[data-theme="dark"] .hifz-checkbox-btn {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.hifz-checkbox-btn:hover {
+  background: var(--surface-hover);
+}
+
+.hifz-checkbox-btn input[type="checkbox"] {
+  accent-color: var(--color-primary);
+  width: 16px;
+  height: 16px;
+}
+
+.hifz-checkbox-btn span {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.hifz-planner__inputs {
 }
 
 .progress-ring__label {
@@ -956,4 +976,137 @@
   display: inline-block;
   vertical-align: text-bottom;
   flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════
+   PAGINATION CONTROLS
+   ══════════════════════════════════════════════ */
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-8);
+  flex-wrap: wrap;
+  direction: ltr; /* Keeps buttons in 1,2,3 order left to right or rtl depending on preference. Usually rtl is 3,2,1. Let's use rtl. */
+  direction: rtl;
+}
+
+.pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--color-primary);
+  color: var(--text-primary);
+}
+
+.pagination-btn--active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.pagination-btn--active:hover:not(:disabled) {
+  background: var(--color-primary);
+  color: white;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  color: var(--text-tertiary);
+  font-family: var(--font-ui);
+}
+
+/* ══════════════════════════════════════════════
+   TODAY'S HIGHLIGHT (Hifz Planner)
+   ══════════════════════════════════════════════ */
+
+.hifz-day-card--today {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+  box-shadow: 0 0 0 1px var(--color-primary), var(--shadow-sm);
+  transform: scale(1.02);
+}
+
+.today-badge {
+  display: inline-block;
+  background: var(--color-primary);
+  color: white;
+  font-size: var(--font-size-xs);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  margin-right: var(--space-3);
+  vertical-align: middle;
+  box-shadow: var(--shadow-sm);
+}
+
+.missed-badge {
+  display: inline-block;
+  background: var(--color-danger);
+  color: white;
+  font-size: var(--font-size-xs);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  margin-right: var(--space-3);
+  vertical-align: middle;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+.hifz-day-card--completed .missed-badge {
+  display: none !important;
+}
+
+/* ══════════════════════════════════════════════
+   INSPIRATIONAL QUOTE (Hifz Planner)
+   ══════════════════════════════════════════════ */
+
+.hifz-quote {
+  margin-bottom: var(--space-8);
+  padding: var(--space-6);
+  border-right: 4px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-arabic);
+}
+
+.hifz-quote__text {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-arabic);
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+  font-weight: 700;
+}
+
+.hifz-quote__source {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
 }

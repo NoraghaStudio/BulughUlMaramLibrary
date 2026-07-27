@@ -29,14 +29,9 @@ const ThemeManager = (() => {
   }
 
   function toggle() {
-    document.documentElement.classList.add('theme-transitioning');
     currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
     localStorage.setItem(STORAGE_KEY, currentTheme);
     _apply();
-    
-    setTimeout(() => {
-      document.documentElement.classList.remove('theme-transitioning');
-    }, 500);
   }
 
   function _apply() {

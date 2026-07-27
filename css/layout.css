@@ -16,6 +16,11 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+::selection {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
 body {
   font-family: var(--font-ui);
   background-color: var(--bg-deep);
@@ -26,24 +31,9 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color var(--transition-slow), color var(--transition-slow);
 }
 
-/* Ambient background effects */
-body::before,
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-body::before {
-  background: var(--ambient-1), var(--ambient-2);
-}
-body::after {
-  background: var(--ambient-3);
-}
+/* Ambient background effects removed for performance */
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar {

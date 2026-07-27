@@ -132,11 +132,7 @@
   animation: progressFill 1s ease-out;
 }
 
-/* ── Theme Transition ── */
-.theme-transitioning,
-.theme-transitioning * {
-  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease !important;
-}
+/* Theme transition removed for performance */
 
 /* ── Slide In from Left (RTL: drawer comes from left) ── */
 @keyframes slideInFromLeft {
